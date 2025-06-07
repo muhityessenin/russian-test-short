@@ -135,7 +135,7 @@ const validatePhoneNumber = (phone: string): boolean => {
 const testSections: TestSection[] = [
   {
     id: "video_motivation",
-    title: "Эмоциялық бейне",
+    title: "Видео",
     icon: Play,
     questions: [
       {
@@ -238,6 +238,24 @@ export default function RussianTest() {
   useEffect(() => {
     setSelectedOption(null)
   }, [currentQuestion, currentSection])
+  useEffect(() => {
+    const savedProgress = localStorage.getItem("russianTestProgress")
+    if (savedProgress) {
+      const parsed = JSON.parse(savedProgress)
+      setCurrentSection(parsed.currentSection || 0)
+      setCurrentQuestion(parsed.currentQuestion || 0)
+      setAnswers(parsed.answers || {})
+    }
+  }, [])
+
+  useEffect(() => {
+    const progress = {
+      currentSection,
+      currentQuestion,
+      answers,
+    }
+    localStorage.setItem("russianTestProgress", JSON.stringify(progress))
+  }, [currentSection, currentQuestion, answers])
 
   const allQuestions = testSections.flatMap((section) => section.questions)
   const totalQuestions = allQuestions.length
@@ -337,7 +355,6 @@ export default function RussianTest() {
         detailedAnswers: JSON.stringify(answers),
       }
 
-      // Замените YOUR_GOOGLE_APPS_SCRIPT_URL на ваш реальный URL
       const response = await fetch(
           "https://script.google.com/macros/s/AKfycbw3jV3koZiNrOR5r_ClX-xhDjE0BBg4F13x-vhK09YKYcu3VrNy-8sV4noiXqy4umaDCQ/exec",
           {
@@ -525,35 +542,8 @@ export default function RussianTest() {
         {/* Прогресс-бар */}
         <div className="border-b border-gray-100 bg-white sticky top-0 z-10">
           <div className="w-full max-w-4xl lg:max-w-none mx-auto px-4 lg:px-8 xl:px-16 py-2">
-            <div className="flex items-center justify-between mb-2">
-              {testSections.map((section, index) => (
-                  <div key={section.id} className="flex items-center">
-                    <div
-                        className={`flex flex-col items-center gap-1 ${
-                            index < currentSection
-                                ? "text-blue-600"
-                                : index === currentSection
-                                    ? "text-blue-600"
-                                    : "text-gray-400"
-                        }`}
-                    >
-                      <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all ${
-                              index < currentSection
-                                  ? "bg-blue-600 text-white"
-                                  : index === currentSection
-                                      ? "bg-blue-100 text-blue-600 ring-4 ring-blue-50"
-                                      : "bg-gray-100 text-gray-400"
-                          }`}
-                      >
-                        <span className="text-sm font-bold">{index + 1}</span>
-                      </div>
-                      <span className="font-medium text-xs sm:text-sm">{section.title}</span>
-                    </div>
-                    {/* Removed divider line between sections */}
-                  </div>
-              ))}
-            </div>
+            <div className="mb-2 h-4"></div>
+
             <div className="progress-bar">
               <div className="progress-bar-fill" style={{ width: `${(currentQuestionIndex / totalQuestions) * 100}%` }}>
                 <div className="progress-bar-glow"></div>
