@@ -135,7 +135,7 @@ const validatePhoneNumber = (phone: string): boolean => {
 const testSections: TestSection[] = [
   {
     id: "video_motivation",
-    title: "Видео",
+    title: "Видео сұрақтар",
     icon: Play,
     questions: [
       {
@@ -144,7 +144,7 @@ const testSections: TestSection[] = [
         question: "Диктор не нәрсеге назар аударуға шақырып тұр?",
         media: {
           type: "video",
-          url: "/IMG_1088.mp4",
+          url: "/IMG_1088.mp4", // сцена из Кунг-фу Панды
         },
         options: [
           "Өткенді ұмытпауға",
@@ -160,7 +160,7 @@ const testSections: TestSection[] = [
         question: "Бұл видео қандай кеңес береді?",
         media: {
           type: "video",
-          url: "/IMG_1089.mp4",
+          url: "/IMG_1089.mp4", // Рататуй
         },
         options: [
           "Қателік жасамауға",
@@ -176,7 +176,7 @@ const testSections: TestSection[] = [
         question: "Бұл видеода кейіпкер қандай сезімді бастан кешіруде?",
         media: {
           type: "video",
-          url: "/IMG_1091.mp4",
+          url: "/IMG_1091.mp4", // Король Лев
         },
         options: [
           "Қуаныш",
@@ -192,7 +192,7 @@ const testSections: TestSection[] = [
         question: "Бұл диалог қай жерде болып жатыр?",
         media: {
           type: "video",
-          url: "/IMG_1092.mp4",
+          url: "/IMG_1092.mp4", // 1+1
         },
         options: [
           "Кинотеатрға кіреберіс",
@@ -201,14 +201,15 @@ const testSections: TestSection[] = [
           "Аурухана қабылдау бөлімі"
         ],
         correctAnswer: 2,
-      },
+      }
+      ,
       {
         id: 5,
         type: "video",
         question: "Бұл көріністе келесі сәтте не болуы мүмкін деп ойлайсыз?",
         media: {
           type: "video",
-          url: "/IMG_1093.mp4",
+          url: "/IMG_1093.mp4", // Иллюзия обмана
         },
         options: [
           "Қоштасу мен тарасу",
@@ -222,7 +223,6 @@ const testSections: TestSection[] = [
   },
 ]
 
-
 export default function RussianTest() {
   const [currentSection, setCurrentSection] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -234,9 +234,7 @@ export default function RussianTest() {
   const [showPhoneRequest, setShowPhoneRequest] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState("")
-  const [selectedOption, setSelectedOption] = useState<number | null>(null)
   useEffect(() => {
-    setSelectedOption(null)
   }, [currentQuestion, currentSection])
   useEffect(() => {
     const savedProgress = localStorage.getItem("russianTestProgress")
@@ -267,11 +265,9 @@ export default function RussianTest() {
 
     // Сохраняем ответ сразу
     setAnswers((prev) => ({ ...prev, [questionId]: answerIndex }))
-    setSelectedOption(answerIndex)
 
     // Сброс selectedOption ДО перерендера
     requestAnimationFrame(() => {
-      setSelectedOption(null)
     })
 
     // Переход к следующему вопросу
@@ -349,12 +345,10 @@ export default function RussianTest() {
         totalScore: `${totalCorrect}/${totalQuestions}`,
         totalPercentage: totalPercentage,
         videoScore: `${sectionResults[0].correct}/${sectionResults[0].total}`,
-        grammarScore: `${sectionResults[1].correct}/${sectionResults[1].total}`,
-        translationScore: `${sectionResults[2].correct}/${sectionResults[2].total}`,
-        writingScore: `${sectionResults[3].correct}/${sectionResults[3].total}`,
         detailedAnswers: JSON.stringify(answers),
       }
 
+      // Замените YOUR_GOOGLE_APPS_SCRIPT_URL на ваш реальный URL
       const response = await fetch(
           "https://script.google.com/macros/s/AKfycbw3jV3koZiNrOR5r_ClX-xhDjE0BBg4F13x-vhK09YKYcu3VrNy-8sV4noiXqy4umaDCQ/exec",
           {
@@ -598,15 +592,16 @@ export default function RussianTest() {
                   <Card
                       key={`${currentQuestionData.id}-${index}`}
                       className={`option-card cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 border-2 hover:border-blue-300 ${
-                          selectedOption === index ? "bg-blue-600 text-white transform scale-98" : ""
+                          answers[currentQuestionData.id] === index ? "bg-blue-600 text-white transform scale-98" : ""
                       }`}
                       onClick={() => handleAnswer(index)}
                   >
+
                     <CardContent className="p-6 lg:p-8">
                       <div className="flex items-center gap-4">
                         <div
                             className={`option-letter w-8 h-8 rounded-full flex items-center justify-center text-blue-600 font-semibold ${
-                                selectedOption === index ? "bg-white text-blue-600" : "bg-blue-100"
+                                answers[currentQuestionData.id] === index ? "bg-white text-blue-600" : "bg-blue-100"
                             }`}
                         >
                           {String.fromCharCode(65 + index)}
